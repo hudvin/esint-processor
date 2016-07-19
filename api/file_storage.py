@@ -7,8 +7,8 @@ class FileStorage:
         self.gridfs = gridfs
 
 
-    def put(self, file_obj):
-        _id = self.gridfs.put(file_obj)
+    def put(self, file_obj, filename):
+        _id = self.gridfs.put(file_obj, filename=filename)
         return _id
 
     def get(self, file_id):

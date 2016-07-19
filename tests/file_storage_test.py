@@ -10,8 +10,9 @@ class TestFileStorage(unittest.TestCase):
         self.file_storage = FileStorage(self.mongo_connector.fs)
 
     def test_get_records(self):
-        file_obj_in =  open("file_storage_test.py", "rb")
-        _id =  self.file_storage.put(file_obj_in.read())
+        filename = "file_storage_test.py"
+        file_obj_in =  open(filename, "rb")
+        _id =  self.file_storage.put(file_obj_in.read(), filename)
         file_obj_out = self.file_storage.get(_id)
 
 
