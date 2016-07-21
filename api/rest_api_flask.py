@@ -5,9 +5,9 @@ from flask import Flask, request, send_file
 from flask_restful import reqparse, abort, Api, Resource
 from flask.views import MethodView
 
-from api.file_storage import FileStorage
-from api.json_utils import FileResponseBuilder
-from api.mongo_connector import MongoConnector
+from file_storage import FileStorage
+from json_utils import FileResponseBuilder
+from mongo_connector import MongoConnector
 
 from flask_cors import CORS, cross_origin
 
