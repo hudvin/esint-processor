@@ -8,34 +8,13 @@ from api.exif_extractor import ExifExtractor
 import os
 
 from api.file_storage import FileStorage
+from api.json_utils import FileResponseBuilder
 from api.mongo_connector import MongoConnector
 
 
-class FileResponseBuilder:
-
-    def __init__(self):
-        self.data = {"files":[]}
-
-    def addFileInfo(self, name, size, url, deleteUrl, thumbnail_url, deleteType):
-        record = {}
-        record['name'] = name
-        record['size'] = size
-        record['url'] = url
-        record['deleteUrl'] = deleteUrl
-        record['thumbnailUrl'] = thumbnail_url
-        record['deleteType'] = deleteType
-
-        self.data["files"].append(record)
-
-    def getJsonResponse(self):
-        return simplejson.dumps(self.data)
 
 
-
-
-result = simplejson.dumps({"files": [
-    {"name": "filename", "size": "666", "url": "some url", "deleteUrl": "delete url", "thumbnailUrl": "th url",
-     "deleteType": "delete type"}]})
+result = simplejson.dumps({"files": []})
 
 host='127.0.0.1'
 port=8080
@@ -48,10 +27,12 @@ fileStorage = FileStorage(mongoConnector.fs)
 def build_url(local_url):
     return root_url+local_url
 
+
 def add_header(func):
-    def inner():
+    def inner(**args):
         response.add_header("Access-Control-Allow-Origin", "*")
-        return func()
+        response.add_header("Access-Control-Allow-Methods", "DELETE, GET, OPTIONS, POST")
+        return func(**args)
     return inner
 
 
@@ -65,7 +46,6 @@ def get_files():
     print("get files")
 
 
-
 @route("/upload_file", method = "OPTIONS")
 @add_header
 def upload_file():
@@ -75,6 +55,20 @@ def upload_file():
 @route("/upload_file", method = "GET")
 @add_header
 def upload_file():
+    return result
+
+
+@route("/delete_image/<_id>", method="GET")
+@add_header
+def delete_image_delete(_id):
+    fileStorage.delete(_id)
+    return result
+
+
+@route("/delete_image/<_id>", method="OPTIONS")
+@add_header
+def delete_image_options(_id):
+    #fileStorage.delete(_id)
     return result
 
 
@@ -113,7 +107,6 @@ def upload_file():
 
     filename = file_handler.filename
     length  = file_handler.length
-
 
 
     fileRespBuilder = FileResponseBuilder()
