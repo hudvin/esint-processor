@@ -1,4 +1,7 @@
 from gridfs import GridFS
+from gridfs import GridOut
+
+from typing import List
 
 
 class FileStorage:
@@ -10,11 +13,11 @@ class FileStorage:
         _id = self.gridfs.put(file_obj, filename=filename)
         return _id
 
-   # def put_stream(self):
-
-
     def get(self, file_id):
         return self.gridfs.get(file_id)
 
     def delete(self, file_id):
         return self.gridfs.delete(file_id)
+
+    def get_all(self)->List[GridOut]:
+        return self.gridfs.find()

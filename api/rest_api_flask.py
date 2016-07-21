@@ -1,7 +1,7 @@
 from io import BytesIO
 
 from bson import ObjectId
-from flask import Flask, request, send_file
+from flask import Flask, request, send_file, Response
 from flask_restful import reqparse, abort, Api, Resource
 from flask.views import MethodView
 
@@ -30,6 +30,27 @@ fileStorage = FileStorage(mongoConnector.fs)
 parser = reqparse.RequestParser()
 parser.add_argument('task')
 
+
+class Images(MethodView):
+
+    def __init__(self,file_storage:FileStorage):
+        self.file_storage = file_storage
+
+
+    def get(self):
+        all_files = self.file_storage.get_all()
+        file_resp_builder = FileResponseBuilder()
+        for file in all_files:
+            file_resp_builder.addFileInfo(name=file.filename,
+                                          size=file.length,
+                                          url=build_url("image/original/%s" % file._id),
+                                          deleteUrl=build_url("image/%s" % file._id),
+                                          thumbnail_url=build_url("image/thumbnail/%s" % file._id),
+                                          deleteType="none")
+        resp = Response(response= file_resp_builder.getJsonResponse(),
+                        status=200,
+                        mimetype="application/json")
+        return (resp)
 
 class Image(MethodView):
 
@@ -70,15 +91,16 @@ class Image(MethodView):
                                           deleteUrl=build_url("image/%s" % image_id),
                                           thumbnail_url=build_url("image/thumbnail/%s" % image_id),
                                           deleteType="DELETE")
-            print (file.filename)
         return file_resp_builder.getJsonResponse(), 200
 
 image_view = Image.as_view('image_api', fileStorage)
 app.add_url_rule('/image/<type>/<id>', view_func=image_view, methods=['GET',])
 app.add_url_rule('/image/', view_func=image_view, methods=['POST',])
-# app.add_url_rule('/image/', view_func=image_view, methods=['PUT',])
-# app.add_url_rule('/image/', view_func=image_view, methods=['OPTIONS',])
 app.add_url_rule('/image/<id>', view_func=image_view, methods=['DELETE',])
+
+images_view = Images.as_view("images_api", fileStorage)
+app.add_url_rule('/images/', view_func=images_view, methods=['GET',])
+
 
 
 if __name__ == '__main__':

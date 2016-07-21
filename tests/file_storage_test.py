@@ -1,7 +1,7 @@
 import unittest
 
-from api.mongo_connector import MongoConnector
-from api.file_storage import  FileStorage
+from mongo_connector import MongoConnector
+from file_storage import  FileStorage
 
 class TestFileStorage(unittest.TestCase):
 
@@ -14,6 +14,12 @@ class TestFileStorage(unittest.TestCase):
         file_obj_in =  open(filename, "rb")
         _id =  self.file_storage.put(file_obj_in.read(), filename)
         file_obj_out = self.file_storage.get(_id)
+
+    def test_get_all(self):
+        all_files = self.file_storage.get_all()
+        for file in all_files:
+            print(file)
+        pass
 
 
 if __name__ == '__main__':
