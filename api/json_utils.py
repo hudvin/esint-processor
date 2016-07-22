@@ -6,9 +6,10 @@ class FileResponseBuilder:
     def __init__(self):
         self.data = {"files":[]}
 
-    def addFileInfo(self, name, size, url, deleteUrl, thumbnail_url, deleteType):
+    def addFileInfo(self, name, id, size, url, deleteUrl, thumbnail_url, deleteType):
         record = {}
         record['name'] = name
+        record['id'] = id
         record['size'] = size
         record['url'] = url
         record['deleteUrl'] = deleteUrl

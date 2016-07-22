@@ -42,6 +42,7 @@ class Images(MethodView):
         file_resp_builder = FileResponseBuilder()
         for file in all_files:
             file_resp_builder.addFileInfo(name=file.filename,
+                                          id = str(file._id),
                                           size=file.length,
                                           url=build_url("image/original/%s" % file._id),
                                           deleteUrl=build_url("image/%s" % file._id),
